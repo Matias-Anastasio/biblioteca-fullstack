@@ -1,5 +1,6 @@
 package com.matiasanastasio.biblioteca.model.entity;
 
+import com.matiasanastasio.biblioteca.dto.UsuarioResponse;
 import com.matiasanastasio.biblioteca.model.enums.RolUsuario;
 
 import jakarta.persistence.Column;
@@ -60,8 +61,15 @@ public class Usuario {
     public RolUsuario getRol() {
         return rol;
     }
-    public void setRol(RolUsuario rol) {
-        this.rol = rol;
+    public void cambiarRol(RolUsuario nuevoRol) {
+        if(nuevoRol == null) {
+            throw new IllegalArgumentException("El rol no puede ser nulo");
+        }
+        this.rol = nuevoRol;
+    }
+
+    public UsuarioResponse toUsuarioResponse() {
+        return new UsuarioResponse(id, nombre, email, rol);
     }
 
 }
