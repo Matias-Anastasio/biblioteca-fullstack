@@ -1,5 +1,7 @@
 package com.matiasanastasio.biblioteca.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,4 +60,18 @@ public class UsuarioService {
         u.cambiarRol(nuevoRol);
         return u;
     }
+
+    @Transactional
+    public List<Usuario> obtenerTodos(){
+        return usuarioRepository.findAll();
+    }
+
+    @Transactional
+    public void eliminarUsuario(Long id){
+        if(!usuarioRepository.existsById(id)){
+            throw new NotFoundException("Usuario no encontrado con id= "+ id);
+        }
+        usuarioRepository.deleteById(id);
+    }
+
 }

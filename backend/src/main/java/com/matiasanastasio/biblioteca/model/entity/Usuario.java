@@ -1,6 +1,5 @@
 package com.matiasanastasio.biblioteca.model.entity;
 
-import com.matiasanastasio.biblioteca.dto.UsuarioResponse;
 import com.matiasanastasio.biblioteca.model.enums.RolUsuario;
 
 import jakarta.persistence.Column;
@@ -67,9 +66,4 @@ public class Usuario {
         }
         this.rol = nuevoRol;
     }
-
-    public UsuarioResponse toUsuarioResponse() {
-        return new UsuarioResponse(id, nombre, email, rol);
-    }
-
 }
