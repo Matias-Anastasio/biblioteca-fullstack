@@ -1,4 +1,4 @@
-package com.matiasanastasio.biblioteca.dto;
+package com.matiasanastasio.biblioteca.dto.usuario;
 
 import com.matiasanastasio.biblioteca.model.enums.RolUsuario;
 

@@ -1,6 +1,6 @@
 package mapper;
 
-import com.matiasanastasio.biblioteca.dto.UsuarioResponse;
+import com.matiasanastasio.biblioteca.dto.usuario.UsuarioResponse;
 import com.matiasanastasio.biblioteca.model.entity.Usuario;
 
 public class UsuarioMapper {

@@ -48,12 +48,14 @@ public class UsuarioService {
             .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
     }
 
+    // Obtener por ID
     @Transactional(readOnly = true)
     public Usuario buscarPorId(Long id){
         return usuarioRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
     }
 
+    // Cambiar rol
     @Transactional
     public Usuario cambiarRol(Long id, RolUsuario nuevoRol){
         Usuario u = buscarPorId(id);
@@ -61,17 +63,17 @@ public class UsuarioService {
         return u;
     }
 
+    // Obtener todos
     @Transactional
     public List<Usuario> obtenerTodos(){
         return usuarioRepository.findAll();
     }
 
+    // Eliminar usuario
     @Transactional
     public void eliminarUsuario(Long id){
-        if(!usuarioRepository.existsById(id)){
-            throw new NotFoundException("Usuario no encontrado con id= "+ id);
-        }
-        usuarioRepository.deleteById(id);
+        Usuario usuario = buscarPorId(id);
+        usuarioRepository.delete(usuario);
     }
 
 }

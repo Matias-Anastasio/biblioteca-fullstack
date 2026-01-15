@@ -47,13 +47,13 @@ public class Libro {
     protected Libro() {
     }
 
-    public Libro(String titulo, Autor autor, String isbn, Integer anioPublicacion, Integer ejemplaresTotales, Integer ejemplaresDisponibles) {
+    public Libro(String titulo, Autor autor, String isbn, Integer anioPublicacion, Integer ejemplaresTotales) {
         this.titulo = titulo;
         this.autor = autor;
         this.isbn = isbn;
         this.anioPublicacion = anioPublicacion;
         this.ejemplaresTotales = ejemplaresTotales;
-        this.ejemplaresDisponibles = ejemplaresDisponibles;
+        this.ejemplaresDisponibles = ejemplaresTotales;
     }
 
     public Long getId() {

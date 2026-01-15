@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.matiasanastasio.biblioteca.dto.UsuarioCreateRequest;
-import com.matiasanastasio.biblioteca.dto.UsuarioResponse;
-import com.matiasanastasio.biblioteca.dto.UsuarioRolUpdateRequest;
+import com.matiasanastasio.biblioteca.dto.usuario.UsuarioCreateRequest;
+import com.matiasanastasio.biblioteca.dto.usuario.UsuarioResponse;
+import com.matiasanastasio.biblioteca.dto.usuario.UsuarioRolUpdateRequest;
 import com.matiasanastasio.biblioteca.model.entity.Usuario;
 import com.matiasanastasio.biblioteca.service.UsuarioService;
 
