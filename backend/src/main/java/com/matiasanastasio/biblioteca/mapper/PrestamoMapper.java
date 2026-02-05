@@ -1,4 +1,4 @@
-package mapper;
+package com.matiasanastasio.biblioteca.mapper;
 
 import com.matiasanastasio.biblioteca.dto.prestamo.PrestamoResponse;
 import com.matiasanastasio.biblioteca.model.entity.Prestamo;

@@ -7,8 +7,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.matiasanastasio.biblioteca.dto.prestamo.PrestamoCreateRequest;
+import com.matiasanastasio.biblioteca.dto.prestamo.PrestamoResponse;
 import com.matiasanastasio.biblioteca.exception.ConflictException;
 import com.matiasanastasio.biblioteca.exception.NotFoundException;
+import com.matiasanastasio.biblioteca.mapper.PrestamoMapper;
 import com.matiasanastasio.biblioteca.model.entity.Libro;
 import com.matiasanastasio.biblioteca.model.entity.Prestamo;
 import com.matiasanastasio.biblioteca.model.entity.Usuario;
@@ -36,17 +39,22 @@ public class PrestamoService {
         this.libroRepository = libroRepository;
     }
 
+    protected Prestamo buscarEntidadPorId(Long id){
+        return prestamoRepository.findById(id)
+            .orElseThrow(()-> new NotFoundException("No existe el prestamo con el id: " + id));
+    }
+
     @Transactional
-    public Prestamo crearPrestamo(Long usuarioId, Long libroId) {
+    public PrestamoResponse crearPrestamo(PrestamoCreateRequest req) {
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-            .orElseThrow(()-> new NotFoundException("Usuario no encontrado con id: " + usuarioId));
+        Usuario usuario = usuarioRepository.findById(req.getUsuarioId())
+            .orElseThrow(()-> new NotFoundException("Usuario no encontrado con id: " + req.getUsuarioId()));
 
-        Libro libro = libroRepository.findById(libroId)
-            .orElseThrow(()-> new NotFoundException("Libro no encontrado con id:" + libroId));
+        Libro libro = libroRepository.findById(req.getLibroId())
+            .orElseThrow(()-> new NotFoundException("Libro no encontrado con id:" + req.getLibroId()));
         
         if(libro.getEjemplaresDisponibles() <= 0){
-            throw new ConflictException("No hay ejemplares disponibles para el libro id: " + libroId);
+            throw new ConflictException("No hay ejemplares disponibles para el libro id: " + req.getLibroId());
         }
 
         libro.prestarUnEjemplar();
@@ -57,31 +65,30 @@ public class PrestamoService {
 
         Prestamo prestamo = new Prestamo(usuario, libro, hoy, vencimiento, EstadoPrestamo.ACTIVO);
 
-        return prestamoRepository.save(prestamo);
+        Prestamo creado = prestamoRepository.save(prestamo);
+
+        return PrestamoMapper.toResponse(creado);
     }
 
     @Transactional
-    public Prestamo devolverPrestamo(Long prestamoId){
+    public PrestamoResponse devolverPrestamo(Long prestamoId){
         
-        Prestamo prestamo = prestamoRepository.findById(prestamoId)
-            .orElseThrow(()-> new NotFoundException("No existe el prestamo con el id: " + prestamoId));
-
+        Prestamo prestamo = buscarEntidadPorId(prestamoId);
         prestamo.devolver();
 
         prestamo.getLibro().devolverUnEjemplar();
 
-        return prestamo;
+        return PrestamoMapper.toResponse(prestamo);
     }
 
 
-    @Transactional
-    public Prestamo obtenerPorId(Long id){
-        return prestamoRepository.findById(id)
-            .orElseThrow(()-> new NotFoundException("No existe el prestamo con id: " + id));
+    @Transactional(readOnly = true)
+    public PrestamoResponse obtenerPorId(Long id){
+        return PrestamoMapper.toResponse(buscarEntidadPorId(id));
     }
 
-    @Transactional
-    public List<Prestamo> buscar(Long usuarioId, Long libroId, EstadoPrestamo estado){
+    @Transactional(readOnly = true)
+    public List<PrestamoResponse> buscar(Long usuarioId, Long libroId, EstadoPrestamo estado){
 
         Specification<Prestamo> spec = (root, query, cb) -> cb.conjunction();
 
@@ -97,15 +104,16 @@ public class PrestamoService {
             spec = spec.and(PrestamoSpecifications.conEstado(estado));
         }
 
-        return prestamoRepository.findAll(spec);
+        return prestamoRepository.findAll(spec).stream()
+            .map(PrestamoMapper::toResponse)
+            .toList();
     }
 
     @Transactional
-    public Prestamo renovar(Long id){
-        Prestamo prestamo = prestamoRepository.findById(id)
-            .orElseThrow(()-> new NotFoundException("No existe el prestamo con id: " +id));
+    public PrestamoResponse renovar(Long id){
+        Prestamo prestamo = buscarEntidadPorId(id);
         prestamo.renovar();
-        return prestamo;
+        return PrestamoMapper.toResponse(prestamo);
     }
 
 }

@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.matiasanastasio.biblioteca.dto.usuario.UsuarioCreateRequest;
 import com.matiasanastasio.biblioteca.dto.usuario.UsuarioResponse;
 import com.matiasanastasio.biblioteca.dto.usuario.UsuarioRolUpdateRequest;
+import com.matiasanastasio.biblioteca.mapper.UsuarioMapper;
 import com.matiasanastasio.biblioteca.model.entity.Usuario;
 import com.matiasanastasio.biblioteca.service.UsuarioService;
 
 import jakarta.validation.Valid;
-import mapper.UsuarioMapper;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -50,25 +50,20 @@ public class UsuarioController {
     // GET /api/usuarios/{id}  -> obtener usuario por id
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable Long id){
-        Usuario usuario = usuarioService.buscarPorId(id);
-        return ResponseEntity.ok(UsuarioMapper.toResponse(usuario));
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     // GET /api/usuarios -> obtener usuarios
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> obtenerUsuarios(){
-        List<Usuario> usuarios = usuarioService.obtenerTodos();
-        List<UsuarioResponse> usuariosResponse = usuarios.stream()
-            .map(UsuarioMapper::toResponse)
-            .toList();
-        return ResponseEntity.ok(usuariosResponse);
+        return ResponseEntity.ok(usuarioService.obtenerTodos());
     }
 
     // PUT /api/usuarios/{id}/rol -> cambiar rol del usuario
     @PutMapping("/{id}/rol")
     public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable Long id, @Valid @RequestBody UsuarioRolUpdateRequest req){
-        Usuario actualizado = usuarioService.cambiarRol(id,req.getRol());
-        return ResponseEntity.ok(UsuarioMapper.toResponse(actualizado));
+        UsuarioResponse actualizado = usuarioService.cambiarRol(id,req.getRol());
+        return ResponseEntity.ok(actualizado);
     }
 
     // DELETE /api/usuarios/{id}

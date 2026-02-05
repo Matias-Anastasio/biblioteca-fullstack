@@ -4,16 +4,18 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.matiasanastasio.biblioteca.dto.libro.LibroCreateRequest;
+import com.matiasanastasio.biblioteca.dto.libro.LibroResponse;
 import com.matiasanastasio.biblioteca.exception.ConflictException;
 import com.matiasanastasio.biblioteca.exception.NotFoundException;
+import com.matiasanastasio.biblioteca.mapper.LibroMapper;
 import com.matiasanastasio.biblioteca.model.entity.Autor;
 import com.matiasanastasio.biblioteca.model.entity.Libro;
 import com.matiasanastasio.biblioteca.repository.AutorRepository;
 import com.matiasanastasio.biblioteca.repository.LibroRepository;
 import com.matiasanastasio.biblioteca.repository.spec.LibroSpecifications;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class LibroService {
@@ -25,52 +27,60 @@ public class LibroService {
         this.libroRepository = libroRepository;
     }
 
-
-    // Crear libro
-    @Transactional
-    public Libro crearLibro(String titulo, Long autorId, String isbn, Integer anioPublicacion, Integer ejemplaresTotales){
-        if(libroRepository.existsByIsbn(isbn)){
-            throw new ConflictException("El ISBN ya esta en uso");   
-        }
-    
-        Autor autor = autorRepository.findById(autorId)
-            .orElseThrow(() -> new NotFoundException("Autor no encontrado"));
-
-        Libro libro = new Libro(titulo, autor, isbn, anioPublicacion, ejemplaresTotales );
-
-        return libroRepository.save(libro);
+    protected Libro buscarLibroPorId(Long id){
+        return libroRepository.findById(id)
+            .orElseThrow(()-> new NotFoundException("El libro con id '" + id + "' no existe."));
     }
 
 
+    // Crear libro
+    @Transactional
+    public LibroResponse crearLibro(LibroCreateRequest req){
+
+        if(libroRepository.existsByIsbn(req.getIsbn())){
+            throw new ConflictException("El ISBN ya esta en uso");   
+        }
+    
+        Autor autor = autorRepository.findById(req.getAutorId())
+            .orElseThrow(() -> new NotFoundException("Autor no encontrado"));
+
+        Libro libro = new Libro(req.getTitulo(), autor, req.getIsbn(), req.getAnioPublicacion(), req.getEjemplaresTotales() );
+
+        Libro creado = libroRepository.save(libro);
+
+        return LibroMapper.toResponse(creado);
+    }
+
     // Obtener todos
     @Transactional
-    public List<Libro> obtenerTodos(){
-        return libroRepository.findAll();
+    public List<LibroResponse> obtenerTodos(){
+        return libroRepository.findAll().stream()
+            .map(LibroMapper::toResponse)
+            .toList();
     }
 
     // Obtener por ID
     @Transactional
-    public Libro obtenerPorId(Long id){
-        return libroRepository.findById(id)
-            .orElseThrow(()->new NotFoundException("Libro no encontrado"));
+    public LibroResponse obtenerPorId(Long id){
+        return LibroMapper.toResponse(buscarLibroPorId(id));
     }
 
     // Obtener por ISBN
     @Transactional
-    public Libro obtenerPorISBN(String isbn){
-        return libroRepository.findByIsbn(isbn)
+    public LibroResponse obtenerPorISBN(String isbn){
+        Libro libro = libroRepository.findByIsbn(isbn)
             .orElseThrow(()-> new NotFoundException("Libro no encontrado"));
+        return LibroMapper.toResponse(libro);
     }
 
     //Eliminar libro
     @Transactional
     public void eliminarLibro(Long id){
-        Libro libro = obtenerPorId(id);
-        libroRepository.delete(libro);
+        libroRepository.delete(buscarLibroPorId(id));
     }
 
     @Transactional
-    public List<Libro> buscar(String q, Long autorId, Boolean soloDisponibles){
+    public List<LibroResponse> buscar(String q, Long autorId, Boolean soloDisponibles){
 
         Specification<Libro> spec = (root, query, cb) -> cb.conjunction();
 
@@ -84,6 +94,8 @@ public class LibroService {
             spec = spec.and(LibroSpecifications.soloDisponibles());
         }
 
-        return libroRepository.findAll(spec);
+        return libroRepository.findAll(spec).stream()
+            .map(LibroMapper::toResponse)
+            .toList();
     }
 }

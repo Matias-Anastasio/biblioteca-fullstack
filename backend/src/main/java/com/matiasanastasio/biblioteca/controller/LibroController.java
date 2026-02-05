@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.matiasanastasio.biblioteca.dto.libro.LibroCreateRequest;
 import com.matiasanastasio.biblioteca.dto.libro.LibroResponse;
-import com.matiasanastasio.biblioteca.model.entity.Libro;
 import com.matiasanastasio.biblioteca.service.LibroService;
 
 import jakarta.validation.Valid;
-import mapper.LibroMapper;
 
 @RestController
 @RequestMapping("/api/libros")
@@ -33,33 +31,21 @@ public class LibroController {
     // POST /api/libros -> crear libro
     @PostMapping
     public ResponseEntity<LibroResponse> crear(@Valid @RequestBody LibroCreateRequest req){
-
-        Libro creado = libroService.crearLibro(
-            req.getTitulo(), 
-            req.getAutorId(), 
-            req.getIsbn(), 
-            req.getAnioPublicacion(), 
-            req.getEjemplaresTotales());
-        
-        LibroResponse resp = LibroMapper.toResponse(creado);
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);   
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(libroService.crearLibro(req));  
     }
 
     // GET /api/libros obtener libros
     @GetMapping
     public ResponseEntity<List<LibroResponse>> obtenerLibros(){
-        List<Libro> libros = libroService.obtenerTodos();
-        List<LibroResponse> librosResponse = libros.stream()
-            .map(LibroMapper::toResponse)
-            .toList();
-        return ResponseEntity.ok(librosResponse);
+        return ResponseEntity.ok(libroService.obtenerTodos());
     }
 
     // GET /api/libros obtener por ID
     @GetMapping("/{id}")
     public ResponseEntity<LibroResponse> obtenerPorId(@PathVariable Long id){
-        Libro libro = libroService.obtenerPorId(id);
-        return ResponseEntity.ok(LibroMapper.toResponse(libro));
+        return ResponseEntity.ok(libroService.obtenerPorId(id));
     }
 
     // GET /api/libros/buscar?q=...&autorId=...&soloDisponibles=... buscar libros por titulo, autor y/o disponibles
@@ -69,12 +55,8 @@ public class LibroController {
         @RequestParam(required=false) Long autorId,
         @RequestParam(required=false) Boolean soloDisponibles
     ){
-        List<LibroResponse> resp = libroService.buscar(q, autorId, soloDisponibles).stream()
-            .map(LibroMapper::toResponse)
-            .toList();
         
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(libroService.buscar(q, autorId, soloDisponibles));
     }
-
 
 }

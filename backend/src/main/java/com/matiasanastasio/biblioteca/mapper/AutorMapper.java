@@ -1,4 +1,4 @@
-package mapper;
+package com.matiasanastasio.biblioteca.mapper;
 
 import com.matiasanastasio.biblioteca.dto.autor.AutorResponse;
 import com.matiasanastasio.biblioteca.model.entity.Autor;

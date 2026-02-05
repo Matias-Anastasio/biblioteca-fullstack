@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.matiasanastasio.biblioteca.dto.prestamo.PrestamoCreateRequest;
 import com.matiasanastasio.biblioteca.dto.prestamo.PrestamoResponse;
-import com.matiasanastasio.biblioteca.model.entity.Prestamo;
 import com.matiasanastasio.biblioteca.model.enums.EstadoPrestamo;
 import com.matiasanastasio.biblioteca.service.PrestamoService;
 
 import jakarta.validation.Valid;
-import mapper.PrestamoMapper;
 
 @RestController
 @RequestMapping("/api/prestamos")
@@ -36,24 +34,21 @@ public class PrestamoController {
     @PostMapping
     public ResponseEntity<PrestamoResponse> crear(@Valid @RequestBody PrestamoCreateRequest req){
 
-        Prestamo creado = prestamoService.crearPrestamo(req.getUsuarioId(), req.getLibroId());
+        PrestamoResponse creado = prestamoService.crearPrestamo(req);
 
-        PrestamoResponse resp = PrestamoMapper.toResponse(creado);
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     //PUT /api/prestamos/{id}/devolucion -> devolver un prestamo
     @PutMapping("/{id}/devolucion")
     public ResponseEntity<PrestamoResponse> devolverPrestamo(@PathVariable Long id){
-        Prestamo prestamo = prestamoService.devolverPrestamo(id);
-        return ResponseEntity.ok(PrestamoMapper.toResponse(prestamo));
+        return ResponseEntity.ok(prestamoService.devolverPrestamo(id));
     }
 
     //GET /api/pretamos/{id} -> obtener prestamo por id
     @GetMapping("/{id}")
     public ResponseEntity<PrestamoResponse> obtenerPorId(@PathVariable Long id){
-        Prestamo prestamo = prestamoService.obtenerPorId(id);
-        return ResponseEntity.ok(PrestamoMapper.toResponse(prestamo));
+        return ResponseEntity.ok(prestamoService.obtenerPorId(id));
     }
 
     // GET /api/prestamos?usuarioId=...&libroId=...&estado=... -> filtrar prestamos por usuario, libro y/o estado
@@ -63,17 +58,12 @@ public class PrestamoController {
         @RequestParam(required = false) Long libroId,
         @RequestParam(required = false) EstadoPrestamo estado
     ){
-        List<Prestamo> prestamos = prestamoService.buscar(usuarioId, libroId, estado);
-        List<PrestamoResponse> prestamosResp = prestamos.stream()
-            .map(PrestamoMapper::toResponse)
-            .toList();
-        return ResponseEntity.ok(prestamosResp);
+        return ResponseEntity.ok(prestamoService.buscar(usuarioId, libroId, estado));
     }
 
     //PUT /api/{id}/renovacion -> renueva el prestamo una semana
     @PutMapping("/{id}/renovacion")
     public ResponseEntity<PrestamoResponse> renovarPrestamo(@PathVariable Long id){
-        Prestamo prestamo = prestamoService.renovar(id);
-        return ResponseEntity.ok(PrestamoMapper.toResponse(prestamo));
+        return ResponseEntity.ok(prestamoService.renovar(id));
     }
 }

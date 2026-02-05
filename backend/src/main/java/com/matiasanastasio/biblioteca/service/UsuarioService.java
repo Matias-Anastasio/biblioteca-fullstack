@@ -6,8 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.matiasanastasio.biblioteca.dto.usuario.UsuarioResponse;
 import com.matiasanastasio.biblioteca.exception.ConflictException;
 import com.matiasanastasio.biblioteca.exception.NotFoundException;
+import com.matiasanastasio.biblioteca.mapper.UsuarioMapper;
 import com.matiasanastasio.biblioteca.model.entity.Usuario;
 import com.matiasanastasio.biblioteca.model.enums.RolUsuario;
 import com.matiasanastasio.biblioteca.repository.UsuarioRepository;
@@ -23,6 +25,16 @@ public class UsuarioService {
     public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    protected Usuario buscarEntidadPorId(Long id){
+        return usuarioRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+    }
+
+    protected Usuario buscarEntidadPorEmail(String email){
+        return usuarioRepository.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
     }
 
     // Crear usuario
@@ -43,36 +55,36 @@ public class UsuarioService {
 
     // Buscar por email
     @Transactional(readOnly = true)
-    public Usuario buscarPorEmail(String email){
-        return usuarioRepository.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+    public UsuarioResponse buscarPorEmail(String email){
+        return UsuarioMapper.toResponse(buscarEntidadPorEmail(email));
     }
 
     // Obtener por ID
     @Transactional(readOnly = true)
-    public Usuario buscarPorId(Long id){
-        return usuarioRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+    public UsuarioResponse buscarPorId(Long id){
+        return UsuarioMapper.toResponse(buscarEntidadPorId(id));
     }
 
     // Cambiar rol
     @Transactional
-    public Usuario cambiarRol(Long id, RolUsuario nuevoRol){
-        Usuario u = buscarPorId(id);
+    public UsuarioResponse cambiarRol(Long id, RolUsuario nuevoRol){
+        Usuario u = buscarEntidadPorId(id);
         u.cambiarRol(nuevoRol);
-        return u;
+        return UsuarioMapper.toResponse(u);
     }
 
     // Obtener todos
-    @Transactional
-    public List<Usuario> obtenerTodos(){
-        return usuarioRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<UsuarioResponse> obtenerTodos(){
+        return usuarioRepository.findAll().stream()
+            .map(UsuarioMapper::toResponse)
+            .toList();
     }
 
     // Eliminar usuario
     @Transactional
     public void eliminarUsuario(Long id){
-        Usuario usuario = buscarPorId(id);
+        Usuario usuario = buscarEntidadPorId(id);
         usuarioRepository.delete(usuario);
     }
 

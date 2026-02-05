@@ -4,7 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.matiasanastasio.biblioteca.dto.autor.AutorCreateRequest;
+import com.matiasanastasio.biblioteca.dto.autor.AutorResponse;
 import com.matiasanastasio.biblioteca.exception.NotFoundException;
+import com.matiasanastasio.biblioteca.mapper.AutorMapper;
 import com.matiasanastasio.biblioteca.model.entity.Autor;
 import com.matiasanastasio.biblioteca.repository.AutorRepository;
 
@@ -18,30 +21,37 @@ public class AutorService {
         this.autorRepository = autorRepository;
     }
 
+    protected Autor buscarEntidadPorId(Long id){
+        return autorRepository.findById(id)
+            .orElseThrow(()-> new NotFoundException("No existe autor con id: " + id));
+    }
+
     // Crear autor
     @Transactional
-    public Autor crearAutor(String nombre, String apellido){
-        Autor autor = new Autor(nombre,apellido);
-        return autorRepository.save(autor);
+    public AutorResponse crearAutor(AutorCreateRequest req){
+        Autor autor = new Autor(req.getNombre(),req.getApellido()); 
+        Autor creado = autorRepository.save(autor);
+        return AutorMapper.toResponse(creado);
     }
 
     // Obtener todos
     @Transactional
-    public List<Autor> obtenerTodos(){
-        return autorRepository.findAll();
+    public List<AutorResponse> obtenerTodos(){
+        return autorRepository.findAll().stream()
+            .map(AutorMapper::toResponse)
+            .toList();
     }
 
     // Obtener por ID
     @Transactional
-    public Autor obtenerPorId(Long id){
-        return autorRepository.findById(id)
-            .orElseThrow(()-> new NotFoundException("Autor no encontrado"));
+    public AutorResponse obtenerPorId(Long id){
+        return AutorMapper.toResponse(buscarEntidadPorId(id));
     }
 
     // Eliminar autor
     @Transactional
     public void eliminarAutor(Long id){
-        Autor autor = obtenerPorId(id);
+        Autor autor = buscarEntidadPorId(id);
         autorRepository.delete(autor);
     }
 }
