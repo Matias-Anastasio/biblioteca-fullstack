@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.matiasanastasio.biblioteca.dto.libro.LibroCreateRequest;
@@ -60,4 +61,20 @@ public class LibroController {
         Libro libro = libroService.obtenerPorId(id);
         return ResponseEntity.ok(LibroMapper.toResponse(libro));
     }
+
+    // GET /api/libros/buscar?q=...&autorId=...&soloDisponibles=... buscar libros por titulo, autor y/o disponibles
+    @GetMapping("/buscar")
+    public ResponseEntity<List<LibroResponse>> buscarLibros(
+        @RequestParam(required=false) String q,
+        @RequestParam(required=false) Long autorId,
+        @RequestParam(required=false) Boolean soloDisponibles
+    ){
+        List<LibroResponse> resp = libroService.buscar(q, autorId, soloDisponibles).stream()
+            .map(LibroMapper::toResponse)
+            .toList();
+        
+        return ResponseEntity.ok(resp);
+    }
+
+
 }

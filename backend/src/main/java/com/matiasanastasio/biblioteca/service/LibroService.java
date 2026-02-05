@@ -2,6 +2,7 @@ package com.matiasanastasio.biblioteca.service;
 
 import java.util.List;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.matiasanastasio.biblioteca.exception.ConflictException;
@@ -10,6 +11,7 @@ import com.matiasanastasio.biblioteca.model.entity.Autor;
 import com.matiasanastasio.biblioteca.model.entity.Libro;
 import com.matiasanastasio.biblioteca.repository.AutorRepository;
 import com.matiasanastasio.biblioteca.repository.LibroRepository;
+import com.matiasanastasio.biblioteca.repository.spec.LibroSpecifications;
 
 import jakarta.transaction.Transactional;
 
@@ -65,5 +67,23 @@ public class LibroService {
     public void eliminarLibro(Long id){
         Libro libro = obtenerPorId(id);
         libroRepository.delete(libro);
+    }
+
+    @Transactional
+    public List<Libro> buscar(String q, Long autorId, Boolean soloDisponibles){
+
+        Specification<Libro> spec = (root, query, cb) -> cb.conjunction();
+
+        spec = spec.and(LibroSpecifications.buscarGlobal(q));
+
+        if(autorId!=null){
+            spec = spec.and(LibroSpecifications.conAutorId(autorId));
+        }
+
+        if(Boolean.TRUE.equals(soloDisponibles)){
+            spec = spec.and(LibroSpecifications.soloDisponibles());
+        }
+
+        return libroRepository.findAll(spec);
     }
 }

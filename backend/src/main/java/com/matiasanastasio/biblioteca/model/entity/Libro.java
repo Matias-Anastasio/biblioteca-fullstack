@@ -78,4 +78,17 @@ public class Libro {
         return ejemplaresDisponibles;
     }
 
+    public void prestarUnEjemplar(){
+        if (ejemplaresDisponibles<=0){
+            throw new IllegalStateException("No hay ejemplares disponibles");
+        }
+        ejemplaresDisponibles--;
+    }
+
+    public void devolverUnEjemplar(){
+        if(ejemplaresDisponibles>=ejemplaresTotales){
+            throw new IllegalStateException("No se pueden devolver mas ejemplares");
+        }
+        ejemplaresDisponibles++;
+    }
 }

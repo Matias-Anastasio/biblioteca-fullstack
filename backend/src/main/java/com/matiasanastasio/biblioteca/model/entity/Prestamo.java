@@ -81,4 +81,18 @@ public class Prestamo {
         return estado;
     }
     
+    public void devolver(){
+        if(estado!=EstadoPrestamo.ACTIVO && estado!=EstadoPrestamo.VENCIDO){
+            throw new IllegalStateException("No se puede devolver un prestamo que no este ACTIVO o VENCIDO");
+        }
+        this.estado = EstadoPrestamo.DEVUELTO;
+        this.fechaDevolucion = LocalDate.now();
+    }
+
+    public void renovar() {
+        if(this.estado != EstadoPrestamo.ACTIVO){
+            throw new IllegalStateException("El prestamo no se encuentra activo");
+        }
+        this.fechaVencimiento = fechaVencimiento.plusDays(7);
+    }
 }

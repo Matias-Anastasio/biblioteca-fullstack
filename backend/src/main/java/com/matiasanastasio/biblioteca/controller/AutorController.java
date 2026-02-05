@@ -51,6 +51,7 @@ public class AutorController {
         return ResponseEntity.ok(autoresResponse);
     }
 
+    //GET /api/autores/{id} -> obtener autor por id
     @GetMapping("/{id}")
     public ResponseEntity<AutorResponse> obtenerPorId(@PathVariable Long id){
         Autor autor = autorService.obtenerPorId(id);
