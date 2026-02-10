@@ -1,7 +1,8 @@
 package com.matiasanastasio.biblioteca.controller;
 
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,12 +54,13 @@ public class PrestamoController {
 
     // GET /api/prestamos?usuarioId=...&libroId=...&estado=... -> filtrar prestamos por usuario, libro y/o estado
     @GetMapping
-    public ResponseEntity<List<PrestamoResponse>> obtenerPrestamos(
+    public ResponseEntity<Page<PrestamoResponse>> obtenerPrestamos(
         @RequestParam(required = false) Long usuarioId,
         @RequestParam(required = false) Long libroId,
-        @RequestParam(required = false) EstadoPrestamo estado
+        @RequestParam(required = false) EstadoPrestamo estado,
+        Pageable pageable
     ){
-        return ResponseEntity.ok(prestamoService.buscar(usuarioId, libroId, estado));
+        return ResponseEntity.ok(prestamoService.buscar(usuarioId, libroId, estado, pageable));
     }
 
     //PUT /api/{id}/renovacion -> renueva el prestamo una semana

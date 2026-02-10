@@ -2,8 +2,11 @@ package com.matiasanastasio.biblioteca.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,13 +55,14 @@ public class LibroController {
 
     // GET /api/libros/buscar?q=...&autorId=...&soloDisponibles=... buscar libros por titulo, autor y/o disponibles
     @GetMapping("/buscar")
-    public ResponseEntity<List<LibroResponse>> buscarLibros(
+    public ResponseEntity<Page<LibroResponse>> buscarLibros(
         @RequestParam(required=false) String q,
         @RequestParam(required=false) Long autorId,
-        @RequestParam(required=false) Boolean soloDisponibles
+        @RequestParam(required=false) Boolean soloDisponibles,
+        Pageable pageable
     ){
         
-        return ResponseEntity.ok(libroService.buscar(q, autorId, soloDisponibles));
+        return ResponseEntity.ok(libroService.buscar(q, autorId, soloDisponibles, pageable));
     }
 
     @PatchMapping("/{id}")
@@ -67,6 +71,12 @@ public class LibroController {
         @Valid @RequestBody LibroUpdateRequest req
     ){
         return ResponseEntity.ok(libroService.actualizar(id,req));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+        libroService.eliminarLibro(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

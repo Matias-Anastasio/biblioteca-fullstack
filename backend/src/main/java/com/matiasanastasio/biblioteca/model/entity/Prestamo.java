@@ -91,8 +91,13 @@ public class Prestamo {
 
     public void renovar() {
         if(this.estado != EstadoPrestamo.ACTIVO){
-            throw new IllegalStateException("El prestamo no se encuentra activo");
+            throw new IllegalStateException("Solo un prestamo activo puede renovarse");
         }
+
+        if(this.fechaVencimiento.isBefore(LocalDate.now())){
+            throw new IllegalStateException("El prestamo se encuentra vencido y no puede renovarse");
+        }
+
         this.fechaVencimiento = fechaVencimiento.plusDays(7);
     }
 }
