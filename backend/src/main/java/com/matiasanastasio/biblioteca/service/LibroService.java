@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.matiasanastasio.biblioteca.dto.libro.LibroCreateRequest;
 import com.matiasanastasio.biblioteca.dto.libro.LibroResponse;
+import com.matiasanastasio.biblioteca.dto.libro.LibroUpdateRequest;
 import com.matiasanastasio.biblioteca.exception.ConflictException;
 import com.matiasanastasio.biblioteca.exception.NotFoundException;
 import com.matiasanastasio.biblioteca.mapper.LibroMapper;
@@ -27,7 +28,7 @@ public class LibroService {
         this.libroRepository = libroRepository;
     }
 
-    protected Libro buscarLibroPorId(Long id){
+    protected Libro buscarEntidadPorId(Long id){
         return libroRepository.findById(id)
             .orElseThrow(()-> new NotFoundException("El libro con id '" + id + "' no existe."));
     }
@@ -62,7 +63,7 @@ public class LibroService {
     // Obtener por ID
     @Transactional
     public LibroResponse obtenerPorId(Long id){
-        return LibroMapper.toResponse(buscarLibroPorId(id));
+        return LibroMapper.toResponse(buscarEntidadPorId(id));
     }
 
     // Obtener por ISBN
@@ -76,7 +77,7 @@ public class LibroService {
     //Eliminar libro
     @Transactional
     public void eliminarLibro(Long id){
-        libroRepository.delete(buscarLibroPorId(id));
+        libroRepository.delete(buscarEntidadPorId(id));
     }
 
     @Transactional
@@ -97,5 +98,39 @@ public class LibroService {
         return libroRepository.findAll(spec).stream()
             .map(LibroMapper::toResponse)
             .toList();
+    }
+
+    @Transactional
+    public LibroResponse actualizar(Long id, LibroUpdateRequest req){
+        Libro libro = buscarEntidadPorId(id);
+        if(req.getTitulo()!=null){
+            libro.actualizarTitulo(req.getTitulo());
+        }
+
+        if(req.getIsbn()!=null){
+            String nuevoIsbn = req.getIsbn().trim();
+            if(libroRepository.existsByIsbnAndIdNot(nuevoIsbn,id)){
+                throw new ConflictException("El ISBN ya está en uso");
+            }
+        libro.actualizarIsbn(nuevoIsbn);
+        }
+        
+
+        if(req.getAnioPublicacion() != null){
+            libro.actualizarAnioPublicacion(req.getAnioPublicacion());
+        }
+
+        if(req.getAutorId() != null){
+            Autor autor = autorRepository.findById(req.getAutorId())
+                .orElseThrow(()-> new NotFoundException("El autor con id '"+req.getAutorId()+"' no existe"));
+            libro.cambiarAutor(autor);
+        }
+
+        if(req.getEjemplaresTotales() != null){
+            libro.actualizarEjemplaresTotales(req.getEjemplaresTotales());
+        }
+
+        Libro guardado = libroRepository.save(libro);
+        return LibroMapper.toResponse(guardado);
     }
 }

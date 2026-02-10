@@ -9,7 +9,7 @@ public class LibroUpdateRequest {
     private Long autorId;
     private String isbn;
 
-    @Min(0)
+    @Min(1400)
     private Integer anioPublicacion;
 
     @Min(0)

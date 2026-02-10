@@ -12,4 +12,7 @@ public interface  LibroRepository extends JpaRepository<Libro, Long>, JpaSpecifi
     boolean existsByIsbn(String isbn);
 
     Optional<Libro> findByIsbn(String isbn);
+
+    boolean existsByIsbnAndIdNot(String isbn, Long id);
+
 }

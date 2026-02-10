@@ -91,4 +91,45 @@ public class Libro {
         }
         ejemplaresDisponibles++;
     }
+
+    public void actualizarTitulo(String nuevoTitulo){
+        if(nuevoTitulo == null || nuevoTitulo.isBlank()){
+            throw new IllegalArgumentException("El titulo no puede quedar vacio");
+        }
+        this.titulo = nuevoTitulo.trim();
+    }
+
+    public void actualizarIsbn (String nuevoIsbn){
+        if(nuevoIsbn == null || nuevoIsbn.isBlank()){
+            throw new IllegalArgumentException("El ISBN no puede quedar vacio");
+        }
+        this.isbn = nuevoIsbn.trim();
+    }
+
+    public void actualizarAnioPublicacion(Integer nuevoAnio){
+        if(nuevoAnio == null || nuevoAnio<1400){
+            throw new IllegalArgumentException("El año de publicación es inválido");
+        }
+        this.anioPublicacion = nuevoAnio;
+    }
+
+    public void cambiarAutor(Autor nuevoAutor){
+        if(nuevoAutor == null){
+            throw new IllegalArgumentException("El libro no puede quedar sin autor");
+        }
+        this.autor = nuevoAutor;
+    }
+
+    public void actualizarEjemplaresTotales(Integer nuevoTotal){
+        if(nuevoTotal == null || nuevoTotal<0){
+            throw new IllegalArgumentException("El total de ejemplares no puede ser nulo o negativo");
+        }
+        int prestados = this.ejemplaresTotales - this.ejemplaresDisponibles;
+
+        if(nuevoTotal<prestados){
+            throw new IllegalStateException("No se puede reducir el total por debajo de los ejemplares prestados: "+prestados);
+        }
+        this.ejemplaresTotales= nuevoTotal;
+        this.ejemplaresDisponibles = nuevoTotal-prestados;
+    }
 }

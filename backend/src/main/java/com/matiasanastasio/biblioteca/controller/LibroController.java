@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.matiasanastasio.biblioteca.dto.libro.LibroCreateRequest;
 import com.matiasanastasio.biblioteca.dto.libro.LibroResponse;
+import com.matiasanastasio.biblioteca.dto.libro.LibroUpdateRequest;
 import com.matiasanastasio.biblioteca.service.LibroService;
 
 import jakarta.validation.Valid;
@@ -57,6 +59,14 @@ public class LibroController {
     ){
         
         return ResponseEntity.ok(libroService.buscar(q, autorId, soloDisponibles));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<LibroResponse> actualizar(
+        @PathVariable Long id,
+        @Valid @RequestBody LibroUpdateRequest req
+    ){
+        return ResponseEntity.ok(libroService.actualizar(id,req));
     }
 
 }
