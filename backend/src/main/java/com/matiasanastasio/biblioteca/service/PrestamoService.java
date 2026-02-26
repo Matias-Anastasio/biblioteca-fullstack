@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,11 @@ public class PrestamoService {
                 .orElseThrow(() -> new NotFoundException("No existe el prestamo con el id: " + id));
     }
 
+    private boolean esAdmin(Authentication auth){
+        return auth.getAuthorities().stream()
+            .anyMatch(a->a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
     private void validarLimitePrestamos(Long usuarioId) {
 
         if (prestamoRepository.existsByUsuarioIdAndEstado(usuarioId, EstadoPrestamo.VENCIDO)) {
@@ -61,10 +67,10 @@ public class PrestamoService {
     }
 
     @Transactional
-    public PrestamoResponse crearPrestamo(PrestamoCreateRequest req) {
+    public PrestamoResponse crearPrestamo(PrestamoCreateRequest req, String emailAutenticado) {
 
-        Usuario usuario = usuarioRepository.findById(req.getUsuarioId())
-                .orElseThrow(() -> new NotFoundException("Usuario no encontrado con id: " + req.getUsuarioId()));
+        Usuario usuario = usuarioRepository.findByEmail(emailAutenticado)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
         Libro libro = libroRepository.findById(req.getLibroId())
                 .orElseThrow(() -> new NotFoundException("Libro no encontrado con id:" + req.getLibroId()));
@@ -73,7 +79,7 @@ public class PrestamoService {
             throw new ConflictException("No hay ejemplares disponibles para el libro id: " + req.getLibroId());
         }
 
-        validarLimitePrestamos(req.getUsuarioId());
+        validarLimitePrestamos(usuario.getId());
 
         libro.prestarUnEjemplar();
 
@@ -105,7 +111,16 @@ public class PrestamoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PrestamoResponse> buscar(Long usuarioId, Long libroId, EstadoPrestamo estado, Pageable pageable) {
+    public Page<PrestamoResponse> buscar(Long usuarioId, Long libroId, EstadoPrestamo estado, Pageable pageable, Authentication auth) {
+
+        String email = auth.getName();
+
+        if(!esAdmin(auth)){
+            Usuario u = usuarioRepository.findByEmail(email)
+                .orElseThrow(()-> new NotFoundException("Usuario no encontrado"));
+            
+            usuarioId = u.getId();
+        }
 
         Specification<Prestamo> spec = (root, query, cb) -> cb.conjunction();
 

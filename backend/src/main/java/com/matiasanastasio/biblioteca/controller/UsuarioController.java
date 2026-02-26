@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.matiasanastasio.biblioteca.dto.usuario.UsuarioCreateRequest;
 import com.matiasanastasio.biblioteca.dto.usuario.UsuarioResponse;
 import com.matiasanastasio.biblioteca.dto.usuario.UsuarioRolUpdateRequest;
-import com.matiasanastasio.biblioteca.mapper.UsuarioMapper;
-import com.matiasanastasio.biblioteca.model.entity.Usuario;
 import com.matiasanastasio.biblioteca.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -36,14 +35,7 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioResponse> crear(@Valid @RequestBody UsuarioCreateRequest req){
 
-        Usuario creado = usuarioService.crearUsuario(
-            req.getNombre(),
-            req.getEmail(),
-            req.getContrasena(), 
-            req.getRol());
-
-        UsuarioResponse resp = UsuarioMapper.toResponse(creado);
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.crearUsuario(req));
     }
 
 
@@ -60,6 +52,7 @@ public class UsuarioController {
     }
 
     // PUT /api/usuarios/{id}/rol -> cambiar rol del usuario
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/rol")
     public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable Long id, @Valid @RequestBody UsuarioRolUpdateRequest req){
         UsuarioResponse actualizado = usuarioService.cambiarRol(id,req.getRol());

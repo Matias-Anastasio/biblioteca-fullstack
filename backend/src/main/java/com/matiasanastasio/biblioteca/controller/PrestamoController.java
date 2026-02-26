@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,9 +34,9 @@ public class PrestamoController {
 
     //POST /api/prestamos -> nuevo prestamo
     @PostMapping
-    public ResponseEntity<PrestamoResponse> crear(@Valid @RequestBody PrestamoCreateRequest req){
+    public ResponseEntity<PrestamoResponse> crear(@Valid @RequestBody PrestamoCreateRequest req, Authentication auth){
 
-        PrestamoResponse creado = prestamoService.crearPrestamo(req);
+        PrestamoResponse creado = prestamoService.crearPrestamo(req, auth.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
@@ -58,9 +59,10 @@ public class PrestamoController {
         @RequestParam(required = false) Long usuarioId,
         @RequestParam(required = false) Long libroId,
         @RequestParam(required = false) EstadoPrestamo estado,
-        Pageable pageable
+        Pageable pageable,
+        Authentication auth
     ){
-        return ResponseEntity.ok(prestamoService.buscar(usuarioId, libroId, estado, pageable));
+        return ResponseEntity.ok(prestamoService.buscar(usuarioId, libroId, estado, pageable, auth));
     }
 
     //PUT /api/{id}/renovacion -> renueva el prestamo una semana

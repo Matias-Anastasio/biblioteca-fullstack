@@ -10,7 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PrestamoCreateRequest {
     @NotNull
-    private Long usuarioId;
-    @NotNull
     private Long libroId;
 }

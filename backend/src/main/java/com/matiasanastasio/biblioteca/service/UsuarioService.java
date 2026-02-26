@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.matiasanastasio.biblioteca.dto.usuario.UsuarioCreateRequest;
 import com.matiasanastasio.biblioteca.dto.usuario.UsuarioResponse;
 import com.matiasanastasio.biblioteca.exception.ConflictException;
 import com.matiasanastasio.biblioteca.exception.NotFoundException;
@@ -39,18 +40,20 @@ public class UsuarioService {
 
     // Crear usuario
     @Transactional
-    public Usuario crearUsuario(String nombre, String email, String contrasena, RolUsuario rol){
-        if(usuarioRepository.existsByEmail(email)){
+    public UsuarioResponse crearUsuario(UsuarioCreateRequest req){
+        if(usuarioRepository.existsByEmail(req.getEmail())){
             throw new ConflictException("El email ya está en uso");
         }
 
-        RolUsuario rolFinal = (rol == null) ? RolUsuario.USER : rol;
+        RolUsuario rolFinal = (req.getRol() == null) ? RolUsuario.USER : req.getRol();
 
-        String hash = passwordEncoder.encode(contrasena);
+        String hash = passwordEncoder.encode(req.getContrasena());
 
-        Usuario nuevo = new Usuario(nombre, email, hash, rolFinal);
+        Usuario nuevo = new Usuario(req.getNombre(), req.getEmail(), hash, rolFinal);
 
-        return usuarioRepository.save(nuevo);
+        Usuario creado = usuarioRepository.save(nuevo);
+
+        return UsuarioMapper.toResponse(creado);
     }
 
     // Buscar por email
