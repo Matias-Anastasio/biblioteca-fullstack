@@ -11,7 +11,7 @@ public class PrestamoBuilder {
     private Usuario usuario = mock(Usuario.class);
     private Libro libro = mock(Libro.class);
     private LocalDate fechaPrestamo = LocalDate.now();
-    private LocalDate fechaVencimiento = fechaPrestamo.plusDays(7);
+    private LocalDate fechaVencimiento;
     private EstadoPrestamo estado = EstadoPrestamo.ACTIVO;
 
     private PrestamoBuilder(){}
@@ -61,6 +61,10 @@ public class PrestamoBuilder {
     }
 
     public Prestamo build(){
+        if(fechaVencimiento == null){
+            fechaVencimiento = fechaPrestamo.plusDays(7);
+        }
+
         return new Prestamo(
             usuario,
             libro,
