@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public class LibroService {
         this.prestamoRepository = prestamoRepository;
     }
 
-    protected Libro buscarEntidadPorId(Long id){
+    protected Libro buscarEntidadPorId(UUID id){
         return libroRepository.findById(id)
             .orElseThrow(()-> new NotFoundException("El libro con id '" + id + "' no existe."));
     }
@@ -68,7 +69,7 @@ public class LibroService {
 
     // Obtener por ID
     @Transactional
-    public LibroResponse obtenerPorId(Long id){
+    public LibroResponse obtenerPorId(UUID id){
         return LibroMapper.toResponse(buscarEntidadPorId(id));
     }
 
@@ -82,7 +83,7 @@ public class LibroService {
 
     //Eliminar libro
     @Transactional
-    public void eliminarLibro(Long id){
+    public void eliminarLibro(UUID id){
         Libro libro = buscarEntidadPorId(id);
 
         if(prestamoRepository.existsByLibroIdAndEstadoIn(id, java.util.List.of(EstadoPrestamo.ACTIVO,EstadoPrestamo.VENCIDO))){
@@ -93,7 +94,7 @@ public class LibroService {
     }
 
     @Transactional
-    public Page<LibroResponse> buscar(String q, Long autorId, Boolean soloDisponibles, Pageable pageable){
+    public Page<LibroResponse> buscar(String q, UUID autorId, Boolean soloDisponibles, Pageable pageable){
 
         Specification<Libro> spec = (root, query, cb) -> cb.conjunction();
 
@@ -112,7 +113,7 @@ public class LibroService {
     }
 
     @Transactional
-    public LibroResponse actualizar(Long id, LibroUpdateRequest req){
+    public LibroResponse actualizar(UUID id, LibroUpdateRequest req){
         Libro libro = buscarEntidadPorId(id);
         if(req.getTitulo()!=null){
             libro.actualizarTitulo(req.getTitulo());

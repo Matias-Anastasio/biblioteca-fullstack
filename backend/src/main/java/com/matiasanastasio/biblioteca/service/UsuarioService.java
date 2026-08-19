@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    protected Usuario buscarEntidadPorId(Long id){
+    protected Usuario buscarEntidadPorId(UUID id){
         return usuarioRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
     }
@@ -47,7 +48,7 @@ public class UsuarioService {
 
         RolUsuario rolFinal = (req.getRol() == null) ? RolUsuario.USER : req.getRol();
 
-        String hash = passwordEncoder.encode(req.getContrasena());
+        String hash = passwordEncoder.encode(req.getPassword());
 
         Usuario nuevo = new Usuario(req.getNombre(), req.getEmail(), hash, rolFinal);
 
@@ -64,13 +65,13 @@ public class UsuarioService {
 
     // Obtener por ID
     @Transactional(readOnly = true)
-    public UsuarioResponse buscarPorId(Long id){
+    public UsuarioResponse buscarPorId(UUID id){
         return UsuarioMapper.toResponse(buscarEntidadPorId(id));
     }
 
     // Cambiar rol
     @Transactional
-    public UsuarioResponse cambiarRol(Long id, RolUsuario nuevoRol){
+    public UsuarioResponse cambiarRol(UUID id, RolUsuario nuevoRol){
         Usuario u = buscarEntidadPorId(id);
         u.cambiarRol(nuevoRol);
         return UsuarioMapper.toResponse(u);
@@ -86,7 +87,7 @@ public class UsuarioService {
 
     // Eliminar usuario
     @Transactional
-    public void eliminarUsuario(Long id){
+    public void eliminarUsuario(UUID id){
         Usuario usuario = buscarEntidadPorId(id);
         usuarioRepository.delete(usuario);
     }

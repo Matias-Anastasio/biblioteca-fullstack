@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.service;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +43,7 @@ public class PrestamoService {
         this.libroRepository = libroRepository;
     }
 
-    protected Prestamo buscarEntidadPorId(Long id) {
+    protected Prestamo buscarEntidadPorId(UUID id) {
         return prestamoRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("No existe el prestamo con el id: " + id));
     }
@@ -52,7 +53,7 @@ public class PrestamoService {
             .anyMatch(a->a.getAuthority().equals("ROLE_ADMIN"));
     }
 
-    private void validarLimitePrestamos(Long usuarioId) {
+    private void validarLimitePrestamos(UUID usuarioId) {
 
         if (prestamoRepository.existsByUsuarioIdAndEstado(usuarioId, EstadoPrestamo.VENCIDO)) {
             throw new ConflictException("No se puede crear un prestamo: el usuario tiene prestamos vencidos");
@@ -95,7 +96,7 @@ public class PrestamoService {
     }
 
     @Transactional
-    public PrestamoResponse devolverPrestamo(Long prestamoId) {
+    public PrestamoResponse devolverPrestamo(UUID prestamoId) {
 
         Prestamo prestamo = buscarEntidadPorId(prestamoId);
         prestamo.devolver();
@@ -106,12 +107,12 @@ public class PrestamoService {
     }
 
     @Transactional(readOnly = true)
-    public PrestamoResponse obtenerPorId(Long id) {
+    public PrestamoResponse obtenerPorId(UUID id) {
         return PrestamoMapper.toResponse(buscarEntidadPorId(id));
     }
 
     @Transactional(readOnly = true)
-    public Page<PrestamoResponse> buscar(Long usuarioId, Long libroId, EstadoPrestamo estado, Pageable pageable, Authentication auth) {
+    public Page<PrestamoResponse> buscar(UUID usuarioId, UUID libroId, EstadoPrestamo estado, Pageable pageable, Authentication auth) {
 
         String email = auth.getName();
 
@@ -139,7 +140,7 @@ public class PrestamoService {
     }
 
     @Transactional
-    public PrestamoResponse renovar(Long id) {
+    public PrestamoResponse renovar(UUID id) {
         Prestamo prestamo = buscarEntidadPorId(id);
         prestamo.renovar();
         return PrestamoMapper.toResponse(prestamo);

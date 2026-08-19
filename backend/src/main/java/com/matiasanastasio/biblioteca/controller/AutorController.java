@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class AutorController {
 
     //GET /api/autores/{id} -> obtener autor por id
     @GetMapping("/{id}")
-    public ResponseEntity<AutorResponse> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<AutorResponse> obtenerPorId(@PathVariable UUID id){
         return ResponseEntity.ok(autorService.obtenerPorId(id));
     }
 }

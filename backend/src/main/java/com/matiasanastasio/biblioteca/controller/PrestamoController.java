@@ -22,6 +22,8 @@ import com.matiasanastasio.biblioteca.service.PrestamoService;
 
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/prestamos")
 public class PrestamoController {
@@ -43,21 +45,21 @@ public class PrestamoController {
 
     //PUT /api/prestamos/{id}/devolucion -> devolver un prestamo
     @PutMapping("/{id}/devolucion")
-    public ResponseEntity<PrestamoResponse> devolverPrestamo(@PathVariable Long id){
+    public ResponseEntity<PrestamoResponse> devolverPrestamo(@PathVariable UUID id){
         return ResponseEntity.ok(prestamoService.devolverPrestamo(id));
     }
 
     //GET /api/pretamos/{id} -> obtener prestamo por id
     @GetMapping("/{id}")
-    public ResponseEntity<PrestamoResponse> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<PrestamoResponse> obtenerPorId(@PathVariable UUID id){
         return ResponseEntity.ok(prestamoService.obtenerPorId(id));
     }
 
     // GET /api/prestamos?usuarioId=...&libroId=...&estado=... -> filtrar prestamos por usuario, libro y/o estado
     @GetMapping
     public ResponseEntity<Page<PrestamoResponse>> obtenerPrestamos(
-        @RequestParam(required = false) Long usuarioId,
-        @RequestParam(required = false) Long libroId,
+        @RequestParam(required = false) UUID usuarioId,
+        @RequestParam(required = false) UUID libroId,
         @RequestParam(required = false) EstadoPrestamo estado,
         Pageable pageable,
         Authentication auth
@@ -67,7 +69,7 @@ public class PrestamoController {
 
     //PUT /api/{id}/renovacion -> renueva el prestamo una semana
     @PutMapping("/{id}/renovacion")
-    public ResponseEntity<PrestamoResponse> renovarPrestamo(@PathVariable Long id){
+    public ResponseEntity<PrestamoResponse> renovarPrestamo(@PathVariable UUID id){
         return ResponseEntity.ok(prestamoService.renovar(id));
     }
 }

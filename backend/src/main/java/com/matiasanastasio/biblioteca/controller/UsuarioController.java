@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class UsuarioController {
 
     // GET /api/usuarios/{id}  -> obtener usuario por id
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable UUID id){
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
@@ -54,14 +55,14 @@ public class UsuarioController {
     // PUT /api/usuarios/{id}/rol -> cambiar rol del usuario
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/rol")
-    public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable Long id, @Valid @RequestBody UsuarioRolUpdateRequest req){
+    public ResponseEntity<UsuarioResponse> cambiarRol(@PathVariable UUID id, @Valid @RequestBody UsuarioRolUpdateRequest req){
         UsuarioResponse actualizado = usuarioService.cambiarRol(id,req.getRol());
         return ResponseEntity.ok(actualizado);
     }
 
     // DELETE /api/usuarios/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+    public ResponseEntity<Void> eliminar(@PathVariable UUID id){
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }

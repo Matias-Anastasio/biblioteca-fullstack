@@ -13,13 +13,15 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank
     @Column(nullable=false)
@@ -45,7 +47,7 @@ public class Usuario {
         this.contrasena = contrasena;
         this.rol = rol;
     }
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
     public String getNombre() {

@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +50,7 @@ public class LibroController {
 
     // GET /api/libros obtener por ID
     @GetMapping("/{id}")
-    public ResponseEntity<LibroResponse> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<LibroResponse> obtenerPorId(@PathVariable UUID id){
         return ResponseEntity.ok(libroService.obtenerPorId(id));
     }
 
@@ -57,7 +58,7 @@ public class LibroController {
     @GetMapping("/buscar")
     public ResponseEntity<Page<LibroResponse>> buscarLibros(
         @RequestParam(required=false) String q,
-        @RequestParam(required=false) Long autorId,
+        @RequestParam(required=false) UUID autorId,
         @RequestParam(required=false) Boolean soloDisponibles,
         Pageable pageable
     ){
@@ -67,14 +68,14 @@ public class LibroController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<LibroResponse> actualizar(
-        @PathVariable Long id,
+        @PathVariable UUID id,
         @Valid @RequestBody LibroUpdateRequest req
     ){
         return ResponseEntity.ok(libroService.actualizar(id,req));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+    public ResponseEntity<Void> eliminar(@PathVariable UUID id){
         libroService.eliminarLibro(id);
         return ResponseEntity.noContent().build();
     }

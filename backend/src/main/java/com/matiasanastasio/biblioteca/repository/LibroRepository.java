@@ -1,18 +1,19 @@
 package com.matiasanastasio.biblioteca.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.matiasanastasio.biblioteca.model.entity.Libro;
 
-public interface  LibroRepository extends JpaRepository<Libro, Long>, JpaSpecificationExecutor<Libro> {
+public interface  LibroRepository extends JpaRepository<Libro, UUID>, JpaSpecificationExecutor<Libro> {
     
     boolean existsByIsbn(String isbn);
 
     Optional<Libro> findByIsbn(String isbn);
 
-    boolean existsByIsbnAndIdNot(String isbn, Long id);
+    boolean existsByIsbnAndIdNot(String isbn, UUID id);
 
 }

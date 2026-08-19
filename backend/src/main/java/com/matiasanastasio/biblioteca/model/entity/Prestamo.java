@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.model.entity;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.matiasanastasio.biblioteca.model.enums.EstadoPrestamo;
 
@@ -22,8 +23,8 @@ public class Prestamo {
     
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotNull
     @ManyToOne
@@ -58,7 +59,7 @@ public class Prestamo {
         this.fechaVencimiento = fechaVencimiento;
         this.estado = estado;
     }
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

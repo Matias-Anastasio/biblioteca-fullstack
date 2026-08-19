@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -30,7 +31,7 @@ public class JwtService {
         this.expirationMinutes = expirationMinutes;
     }
 
-    public String generarToken(UserDetails user){
+    public String generarToken(UserDetails user, UUID userId){
         Instant now = Instant.now();
 
         List<String> roles = user.getAuthorities().stream()
@@ -40,6 +41,7 @@ public class JwtService {
         return Jwts.builder()
             .subject(user.getUsername())
                 .claim("roles", roles)
+                .claim("userId", userId.toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(expirationMinutes * 60)))
                 .signWith(key,Jwts.SIG.HS256)

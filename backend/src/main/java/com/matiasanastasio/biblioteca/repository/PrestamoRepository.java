@@ -2,6 +2,7 @@ package com.matiasanastasio.biblioteca.repository;
 
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -14,7 +15,7 @@ import com.matiasanastasio.biblioteca.model.enums.EstadoPrestamo;
 
 import jakarta.transaction.Transactional;
 
-public interface PrestamoRepository extends JpaRepository<Prestamo, Long>, JpaSpecificationExecutor<Prestamo> {
+public interface PrestamoRepository extends JpaRepository<Prestamo, UUID>, JpaSpecificationExecutor<Prestamo> {
 
     @Modifying
     @Transactional
@@ -26,11 +27,11 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Long>, JpaSp
             """)
     int marcarVencidos(@Param("hoy") LocalDate hoy);
 
-    int countByUsuarioIdAndEstado(Long usuarioId, EstadoPrestamo estado);
+    int countByUsuarioIdAndEstado(UUID usuarioId, EstadoPrestamo estado);
 
-    boolean existsByUsuarioIdAndEstado(Long usuarioId, EstadoPrestamo estado);
+    boolean existsByUsuarioIdAndEstado(UUID usuarioId, EstadoPrestamo estado);
     
-    boolean existsByLibroIdAndEstadoIn(Long libroId, java.util.Collection<EstadoPrestamo> estados);
+    boolean existsByLibroIdAndEstadoIn(UUID libroId, java.util.Collection<EstadoPrestamo> estados);
 
 
 }

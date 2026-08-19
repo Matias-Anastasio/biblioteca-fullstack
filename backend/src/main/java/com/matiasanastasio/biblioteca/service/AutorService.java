@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class AutorService {
         this.autorRepository = autorRepository;
     }
 
-    protected Autor buscarEntidadPorId(Long id){
+    protected Autor buscarEntidadPorId(UUID id){
         return autorRepository.findById(id)
             .orElseThrow(()-> new NotFoundException("No existe autor con id: " + id));
     }
@@ -44,13 +45,13 @@ public class AutorService {
 
     // Obtener por ID
     @Transactional
-    public AutorResponse obtenerPorId(Long id){
+    public AutorResponse obtenerPorId(UUID id){
         return AutorMapper.toResponse(buscarEntidadPorId(id));
     }
 
     // Eliminar autor
     @Transactional
-    public void eliminarAutor(Long id){
+    public void eliminarAutor(UUID id){
         Autor autor = buscarEntidadPorId(id);
         autorRepository.delete(autor);
     }

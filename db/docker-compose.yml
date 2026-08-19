@@ -1,18 +1,17 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: biblioteca-mysql
+  postgres:
+    image: postgres:16
+    container_name: biblioteca-postgres
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: biblioteca
-      MYSQL_USER: biblioteca_user
-      MYSQL_PASSWORD: root1234
-      MYSQL_ROOT_PASSWORD: biblioteca123
+      POSTGRES_DB: biblioteca
+      POSTGRES_USER: biblioteca_user
+      POSTGRES_PASSWORD: root1234
       TZ: America/Argentina/Buenos_Aires
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  mysql_data:
+  postgres_data:

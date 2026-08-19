@@ -1,5 +1,7 @@
 package com.matiasanastasio.biblioteca.model.entity;
 
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,8 +19,8 @@ import jakarta.validation.constraints.NotNull;
 public class Libro {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank
     @Column(nullable=false)
@@ -56,7 +58,7 @@ public class Libro {
         this.ejemplaresDisponibles = ejemplaresTotales;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
     public String getTitulo() {

@@ -5,13 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 public class LibroCreateRequest {
     @NotBlank
     private String titulo;
     @NotNull
-    private Long autorId;
+    private UUID autorId;
     @NotBlank
     private String isbn;
     @NotNull

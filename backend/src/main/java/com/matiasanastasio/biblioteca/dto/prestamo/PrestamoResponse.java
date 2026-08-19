@@ -1,6 +1,7 @@
 package com.matiasanastasio.biblioteca.dto.prestamo;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.matiasanastasio.biblioteca.model.enums.EstadoPrestamo;
 
@@ -10,12 +11,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PrestamoResponse {
-    private Long id;
+    private UUID id;
 
-    private Long usuarioId;
+    private UUID usuarioId;
     private String usuarioNombre;
 
-    private Long libroId;
+    private UUID libroId;
     private String libroTitulo;
 
     private LocalDate fechaPrestamo;

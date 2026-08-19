@@ -3,6 +3,7 @@ package com.matiasanastasio.biblioteca.repository.spec;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -15,7 +16,7 @@ import jakarta.persistence.criteria.JoinType;
 
 public class LibroSpecifications {
     
-    public static Specification<Libro> conAutorId(Long autorId){
+    public static Specification<Libro> conAutorId(UUID autorId){
         return (root,query,cb) -> cb.equal(root.get("autor").get("id"), autorId);
     }
     
